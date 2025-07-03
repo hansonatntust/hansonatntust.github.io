@@ -1,9 +1,9 @@
 :root {
-    --primary-color: #FF69B4; /* Deep Pink - for a vibrant start */
-    --secondary-color: #FFD700; /* Gold - for accents and highlights */
-    --accent-color: #4B0082; /* Indigo - for strong contrast elements */
-    --text-color: #36454F; /* Charcoal - for readability */
-    --bg-gradient: linear-gradient(135deg, #FF6347 0%, #FFD700 20%, #32CD32 40%, #4169E1 60%, #8A2BE2 80%, #EE82EE 100%); /* Rainbow gradient */
+    --primary-color: #4285F4; /* Google Blue */
+    --secondary-color: #DB4437; /* Google Red */
+    --accent-color: #F4B400; /* Google Yellow */
+    --text-color: #3C4043; /* Dark Grey */
+    --bg-gradient: linear-gradient(135deg, #4285F4 0%, #DB4437 25%, #F4B400 50%, #0F9D58 75%, #4285F4 100%); /* Google Colors Gradient */
 }
 
 * {

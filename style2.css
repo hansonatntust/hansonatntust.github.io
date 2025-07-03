@@ -1,9 +1,9 @@
 :root {
-    --primary-color: #6a0dad; /* Violet */
-    --secondary-color: #007bff; /* Blue */
-    --accent-color: #ff4500; /* OrangeRed */
-    --text-color: #333333; /* Dark Gray for better contrast */
-    --bg-gradient: linear-gradient(135deg, #FF0000 0%, #FF7F00 16%, #FFFF00 33%, #00FF00 50%, #0000FF 66%, #4B0082 83%, #9400D3 100%); /* Rainbow Gradient */
+    --primary-color: #4285F4; /* Google Blue */
+    --secondary-color: #0F9D58; /* Google Green */
+    --accent-color: #DB4437; /* Google Red */
+    --text-color: #3C4043; /* Dark Grey */
+    --bg-gradient: linear-gradient(135deg, #4285F4 0%, #DB4437 25%, #F4B400 50%, #0F9D58 75%, #4285F4 100%); /* Google Colors Gradient */
 }
 
 /* Import Google Font */
