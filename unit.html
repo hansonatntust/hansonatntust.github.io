@@ -8,6 +8,179 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="/pic/favicon.ico">
+    <style>
+        /* Unit Navigation Styles */
+        .unit-nav-container {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .unit-nav-left {
+            left: 20px;
+        }
+
+        .unit-nav-right {
+            right: 20px;
+        }
+
+        .unit-nav-btn {
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .unit-nav-btn:hover {
+            background: rgba(255, 107, 157, 1);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .unit-nav-btn:disabled {
+            background: rgba(200, 200, 200, 0.5);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .unit-nav-btn:disabled:hover {
+            transform: none;
+            background: rgba(200, 200, 200, 0.5);
+        }
+
+        /* Unit Info Tooltip */
+        .unit-nav-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        .unit-nav-left .unit-nav-tooltip {
+            right: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .unit-nav-right .unit-nav-tooltip {
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .unit-nav-btn:hover .unit-nav-tooltip {
+            opacity: 1;
+        }
+
+        /* Unit Counter */
+        .unit-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .unit-nav-container {
+                position: fixed;
+                top: auto;
+                bottom: 100px;
+                transform: none;
+            }
+
+            .unit-nav-left {
+                left: 20px;
+            }
+
+            .unit-nav-right {
+                right: 20px;
+            }
+
+            .unit-nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+
+            .unit-nav-tooltip {
+                display: none;
+            }
+
+            .unit-counter {
+                bottom: 20px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Keyboard Navigation Hint */
+        .keyboard-hint {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            z-index: 999;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 107, 157, 0.2);
+            opacity: 0;
+            animation: fadeInHint 0.5s ease 2s forwards;
+        }
+
+        @keyframes fadeInHint {
+            to { opacity: 1; }
+        }
+
+        .keyboard-hint .hint-close {
+            position: absolute;
+            top: -5px;
+            right: 5px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: #999;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .keyboard-hint {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -40,6 +213,33 @@
             </div>
         </div>
     </nav>
+
+    <!-- Unit Navigation - Left -->
+    <div class="unit-nav-container unit-nav-left">
+        <button class="unit-nav-btn" id="prevUnitBtn" onclick="navigateToUnit(currentUnit - 1)">
+            <i class="fas fa-chevron-left"></i>
+            <div class="unit-nav-tooltip" id="prevUnitTooltip">Unit 1</div>
+        </button>
+    </div>
+
+    <!-- Unit Navigation - Right -->
+    <div class="unit-nav-container unit-nav-right">
+        <button class="unit-nav-btn" id="nextUnitBtn" onclick="navigateToUnit(currentUnit + 1)">
+            <i class="fas fa-chevron-right"></i>
+            <div class="unit-nav-tooltip" id="nextUnitTooltip">Unit 3</div>
+        </button>
+    </div>
+
+    <!-- Unit Counter -->
+    <div class="unit-counter" id="unitCounter">
+        Unit 1 / 20
+    </div>
+
+    <!-- Keyboard Navigation Hint -->
+    <div class="keyboard-hint" id="keyboardHint">
+        <button class="hint-close" onclick="closeHint()">&times;</button>
+        💡 使用 ← → 鍵快速切換 Unit
+    </div>
 
     <!-- Project Header -->
     <section class="project-header">
