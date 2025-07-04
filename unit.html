@@ -302,6 +302,7 @@
     <script>
         let currentUnit = 1;
         let images = [];
+        const totalUnits = 20;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -309,8 +310,8 @@
             const urlParams = new URLSearchParams(window.location.search);
             currentUnit = parseInt(urlParams.get('unit')) || 1;
 
-            // Validate unit number (1-20) - Updated to support 20 units
-            if (currentUnit < 1 || currentUnit > 20) {
+            // Validate unit number (1-20)
+            if (currentUnit < 1 || currentUnit > totalUnits) {
                 currentUnit = 1;
             }
 
@@ -323,7 +324,11 @@
             // Render gallery
             renderGallery();
 
+            // Update navigation
+            updateNavigation();
+
             initScrollAnimations();
+            initKeyboardNavigation();
         });
 
         // Unit information with names and attributes
@@ -349,6 +354,83 @@
             19: { name: "AI Agent, MCP, n8n", attributes: ["代理型AI"] },
             20: { name: "進階 n8n", attributes: ["代理型AI"] }
         };
+
+        // Navigate to specific unit
+        function navigateToUnit(unitNumber) {
+            if (unitNumber >= 1 && unitNumber <= totalUnits && unitNumber !== currentUnit) {
+                window.location.href = `unit.html?unit=${unitNumber}`;
+            }
+        }
+
+        // Update navigation buttons and tooltips
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevUnitBtn');
+            const nextBtn = document.getElementById('nextUnitBtn');
+            const prevTooltip = document.getElementById('prevUnitTooltip');
+            const nextTooltip = document.getElementById('nextUnitTooltip');
+            const unitCounter = document.getElementById('unitCounter');
+
+            // Update counter
+            unitCounter.textContent = `Unit ${currentUnit} / ${totalUnits}`;
+
+            // Update previous button
+            if (currentUnit > 1) {
+                prevBtn.disabled = false;
+                const prevUnit = unitInfo[currentUnit - 1];
+                prevTooltip.textContent = `Unit ${currentUnit - 1}: ${prevUnit.name}`;
+            } else {
+                prevBtn.disabled = true;
+                prevTooltip.textContent = '已經是第一個 Unit';
+            }
+
+            // Update next button
+            if (currentUnit < totalUnits) {
+                nextBtn.disabled = false;
+                const nextUnit = unitInfo[currentUnit + 1];
+                nextTooltip.textContent = `Unit ${currentUnit + 1}: ${nextUnit.name}`;
+            } else {
+                nextBtn.disabled = true;
+                nextTooltip.textContent = '已經是最後一個 Unit';
+            }
+        }
+
+        // Initialize keyboard navigation
+        function initKeyboardNavigation() {
+            document.addEventListener('keydown', function(e) {
+                // Ignore if user is typing in an input field
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        if (currentUnit > 1) {
+                            navigateToUnit(currentUnit - 1);
+                        }
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        if (currentUnit < totalUnits) {
+                            navigateToUnit(currentUnit + 1);
+                        }
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        navigateToUnit(1);
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        navigateToUnit(totalUnits);
+                        break;
+                }
+            });
+        }
+
+        // Close keyboard hint
+        function closeHint() {
+            document.getElementById('keyboardHint').style.display = 'none';
+        }
 
         // Update page content based on unit number
         function updatePageContent() {
@@ -472,34 +554,36 @@
         });
     </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch(`YoutubeLink/unit${currentUnit}.txt`)
-        .then(response => {
-            if (!response.ok) throw new Error("No YouTube link found.");
-            return response.text();
-        })
-        .then(text => {
-            const firstLine = text.trim().split('\n')[0];
-            if (firstLine.includes("youtube") || firstLine.includes("youtu.be")) {
-                const videoId = firstLine.includes("youtu.be")
-                    ? firstLine.split("youtu.be/")[1]
-                    : firstLine.split("v=")[1].split("&")[0];
-                const iframeHTML = `
-                    <div class="container mt-5 mb-5">
-                        <div class="ratio ratio-16x9">
-                            <iframe src="https://www.youtube.com/embed/${videoId}" 
-                                    title="YouTube video" allowfullscreen></iframe>
-                        </div>
-                    </div>`;
-                document.body.insertAdjacentHTML("beforeend", iframeHTML);
-            }
-        })
-        .catch(err => {
-            console.log("No YouTube video for this unit.");
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch(`YoutubeLink/unit${currentUnit}.txt`)
+                .then(response => {
+                    if (!response.ok) throw new Error("No YouTube link found.");
+                    return response.text();
+                })
+                .then(text => {
+                    const firstLine = text.trim().split('\n')[0];
+                    if (firstLine.includes("youtube") || firstLine.includes("youtu.be")) {
+                        const videoId = firstLine.includes("youtu.be")
+                            ? firstLine.split("youtu.be/")[1]
+                            : firstLine.split("v=")[1].split("&")[0];
+                        const iframeHTML = `
+                            <div class="container mt-5 mb-5">
+                                <div class="ratio ratio-16x9">
+                                    <iframe src="https://www.youtube.com/embed/${videoId}" 
+                                            title="YouTube video" allowfullscreen></iframe>
+                                </div>
+                            </div>`;
+                        document.body.insertAdjacentHTML("beforeend", iframeHTML);
+                    }
+                })
+                .catch(err => {
+                    console.log("No YouTube video for this unit.");
+                });
         });
-});
-</script>
+    </script>
 
 </body>
 </html>
