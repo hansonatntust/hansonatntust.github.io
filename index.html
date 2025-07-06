@@ -6,6 +6,7 @@
     <title>My 2025 AI Personal Website</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css">
     <link rel="stylesheet" href="style2.css">
     <link rel="icon" type="image/x-icon" href="/pic/favicon.ico">
 </head>
@@ -43,7 +44,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 hero-content fade-in">
-                    <h1 id="name"></h1>
+                    <h1 id="name" class="neon-effect"></h1>
                     <p class="subtitle" id="title"></p>
                     <div class="mb-3">
                         <strong>專業領域：</strong>
@@ -203,7 +204,10 @@
         // Load profile data
         function loadProfileData() {
             // Update home section
-            document.getElementById('name').textContent = profileData.name;
+            const nameElement = document.getElementById('name');
+            nameElement.textContent = profileData.name;
+            nameElement.classList.add('neon-effect');
+
             document.getElementById('title').textContent = profileData.title;
             document.getElementById('expertise').textContent = profileData.expertise;
             document.getElementById('education').textContent = profileData.education;

@@ -13,7 +13,7 @@
 }
 
 body {
-    font-family: 'Noto Sans TC', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 已修改 */
+    font-family: "LXGW WenKai TC", sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     padding-top: 70px;
@@ -29,7 +29,7 @@ body {
 .navbar-brand {
     font-weight: 700;
     color: var(--primary-color) !important;
-    font-family: 'Noto Sans TC', sans-serif; /* 可選，如果希望品牌名稱也是這個字體 */
+    font-family: "LXGW WenKai TC", sans-serif;
 }
 
 .nav-link {
@@ -70,7 +70,7 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    font-family: 'Noto Sans TC', sans-serif; /* 已修改 */
+    font-family: "LXGW WenKai TC", sans-serif;
 }
 
 .project-subtitle {
@@ -130,7 +130,7 @@ body {
     margin-bottom: 1.5rem;
     position: relative;
     padding-bottom: 0.5rem;
-    font-family: 'Noto Sans TC', sans-serif; /* 已修改 */
+    font-family: "LXGW WenKai TC", sans-serif;
 }
 
 .section-title::after {
