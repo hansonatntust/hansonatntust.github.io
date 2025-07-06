@@ -146,6 +146,21 @@ body {
     margin-bottom: 2rem;
 }
 
+.magnify-char {
+    display: inline-block;
+    margin: 0 0.2rem;
+    animation: magnify-char 4s ease-in-out infinite;
+}
+
+@keyframes magnify-char {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+}
+
 /* Navigation */
 .navbar {
     background: rgba(255,255,255,0.95) !important;
