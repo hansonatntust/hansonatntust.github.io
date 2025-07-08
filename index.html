@@ -81,10 +81,8 @@
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="section bg-light">
+    </section>    <!-- Projects Section -->
+    <section id="projects" class="section bg-soft">
         <div class="container">
             <h2 class="section-title">我的專案</h2>
 
@@ -105,7 +103,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="section bg-light">
+    <section id="contact" class="section bg-soft">
         <div class="container">
             <h2 class="section-title">聯絡我</h2>
             <div class="row justify-content-center">
@@ -145,12 +143,68 @@
     </section>
 
     <!-- Footer -->
+    <!-- Website Statistics -->
+    <section class="statistics-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="statistics-card">
+                        <h4 class="statistics-title">
+                            <i class="fas fa-chart-line"></i> 網站統計
+                        </h4>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-eye stat-icon"></i>
+                                    <div class="stat-number" id="busuanzi_container_site_pv">
+                                        <span id="busuanzi_value_site_pv">-</span>
+                                    </div>
+                                    <div class="stat-label">總瀏覽量</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-users stat-icon"></i>
+                                    <div class="stat-number" id="busuanzi_container_site_uv">
+                                        <span id="busuanzi_value_site_uv">-</span>
+                                    </div>
+                                    <div class="stat-label">訪客數</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-file-alt stat-icon"></i>
+                                    <div class="stat-number" id="busuanzi_container_page_pv">
+                                        <span id="busuanzi_value_page_pv">-</span>
+                                    </div>
+                                    <div class="stat-label">本頁瀏覽</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="backup-counter mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> 
+                                網站運行時間：<span id="runtime"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 Dr. Pin Luarn. 版權所有。</p>
+            <p class="footer-links">
+                <a href="#home">首頁</a> |
+                <a href="#about">關於我</a> |
+                <a href="#projects">專案</a> |
+                <a href="#contact">聯絡</a>
+            </p>
         </div>
     </footer>
-
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
@@ -310,5 +364,79 @@
             }
         });
     </script>
+    <script>
+        // 網站運行時間計算
+        function updateRuntime() {
+            const startDate = new Date("2025-01-01 00:00:00"); // 設定網站開始運行的日期
+            const now = new Date();
+            const diff = now - startDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            const runtimeElement = document.getElementById("runtime");
+            if (runtimeElement) {
+                runtimeElement.textContent = `${days}天 ${hours}小時 ${minutes}分鐘`;
+            }
+        }
+        
+        // 數字動畫效果
+        function animateNumbers() {
+            const numbers = document.querySelectorAll(".stat-number span");
+            numbers.forEach(span => {
+                const finalValue = parseInt(span.textContent) || 0;
+                if (finalValue > 0) {
+                    let currentValue = 0;
+                    const increment = Math.ceil(finalValue / 50);
+                    const timer = setInterval(() => {
+                        currentValue += increment;
+                        if (currentValue >= finalValue) {
+                            currentValue = finalValue;
+                            clearInterval(timer);
+                        }
+                        span.textContent = currentValue;
+                    }, 30);
+                }
+            });
+        }
+        
+        // 當頁面載入完成後執行
+        document.addEventListener("DOMContentLoaded", function() {
+            updateRuntime();
+            setInterval(updateRuntime, 60000); // 每分鐘更新一次
+            
+            // 等待不蒜子載入完成後執行動畫
+            setTimeout(() => {
+                animateNumbers();
+            }, 2000);
+        });
+        
+        // 添加一個備用的簡單計數器（使用localStorage）
+        function updateLocalCounter() {
+            let visits = localStorage.getItem("site_visits") || 0;
+            visits = parseInt(visits) + 1;
+            localStorage.setItem("site_visits", visits);
+            
+            // 如果不蒜子載入失敗，顯示本地計數
+            setTimeout(() => {
+                const busuanziPV = document.getElementById("busuanzi_value_site_pv");
+                const busuanziUV = document.getElementById("busuanzi_value_site_uv");
+                const busuanziPagePV = document.getElementById("busuanzi_value_page_pv");
+                
+                if (busuanziPV && busuanziPV.textContent === "-") {
+                    busuanziPV.textContent = visits;
+                }
+                if (busuanziUV && busuanziUV.textContent === "-") {
+                    busuanziUV.textContent = Math.ceil(visits * 0.7); // 估算獨立訪客
+                }
+                if (busuanziPagePV && busuanziPagePV.textContent === "-") {
+                    busuanziPagePV.textContent = Math.ceil(visits * 0.3); // 估算頁面訪問
+                }
+            }, 3000);
+        }
+        
+        updateLocalCounter();
+    </script>    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
