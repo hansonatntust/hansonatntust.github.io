@@ -33,21 +33,8 @@ body {
     overflow: hidden;
 }
 
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
-    animation: float 6s ease-in-out infinite;
-}
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
+
 
 .hero-content {
     position: relative;
@@ -66,6 +53,71 @@ body {
 
 .profile-img:hover {
     transform: scale(1.05);
+}
+
+/* Hero Section 統計框樣式 */
+.hero-statistics {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.hero-statistics .statistics-card {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 20px 15px;
+    box-shadow: 
+        0 8px 32px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 -1px 0 rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-statistics .statistics-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 35px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+/* Hero Section 統計框內的文字樣式 */
+.hero-statistics .statistics-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.hero-statistics .stat-item {
+    padding: 10px 5px;
+}
+
+.hero-statistics .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.hero-statistics .stat-number {
+    font-size: 1.4rem;
+    margin-bottom: 3px;
+}
+
+.hero-statistics .stat-label {
+    font-size: 0.8rem;
+}
+
+.hero-statistics .backup-counter {
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.hero-statistics .backup-counter small {
+    font-size: 0.75rem;
 }
 
 .hero h1 {
@@ -207,16 +259,6 @@ body {
     overflow: hidden;
 }
 
-.section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
-    animation: float 6s ease-in-out infinite;
-}
 
 .section-title {
     font-size: 2.5rem;
@@ -514,16 +556,6 @@ body {
     overflow: hidden;
 }
 
-.footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
-    animation: float 6s ease-in-out infinite;
-}
 
 .footer > * {
     position: relative;
@@ -557,6 +589,33 @@ body {
     .project-grid {
         grid-template-columns: 1fr;
     }
+
+    /* Hero Section 統計框響應式 */
+    .hero-statistics {
+        max-width: 100%;
+        margin-top: 20px;
+    }
+
+    .hero-statistics .statistics-card {
+        padding: 15px 10px;
+        margin: 0 10px;
+    }
+
+    .hero-statistics .stat-icon {
+        font-size: 1.2rem;
+    }
+
+    .hero-statistics .stat-number {
+        font-size: 1.2rem;
+    }
+
+    .hero-statistics .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .hero-statistics .statistics-title {
+        font-size: 1rem;
+    }
 }
 
 /* ===== 網站統計區域樣式 ===== */
@@ -568,16 +627,6 @@ body {
     overflow: hidden;
 }
 
-.statistics-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
-    animation: float 6s ease-in-out infinite;
-}
 
 .statistics-card {
     background: rgba(255,255,255,0.15);
@@ -729,18 +778,6 @@ body {
     overflow: hidden;
 }
 
-.bg-soft::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
-    animation: float 6s ease-in-out infinite;
-    z-index: 0;
-    pointer-events: none;
-}
 
 .bg-soft .container {
     position: relative;
