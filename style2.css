@@ -202,6 +202,20 @@ body {
 /* Sections */
 .section {
     padding: 80px 0;
+    background: var(--bg-gradient);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
+    animation: float 6s ease-in-out infinite;
 }
 
 .section-title {
@@ -209,8 +223,10 @@ body {
     font-weight: 700;
     text-align: center;
     margin-bottom: 3rem;
-    color: var(--primary-color);
+    color: white;
     position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .section-title::after {
@@ -221,7 +237,7 @@ body {
     transform: translateX(-50%);
     width: 60px;
     height: 4px;
-    background: var(--secondary-color);
+    background: rgba(255,255,255,0.8);
     border-radius: 2px;
 }
 
@@ -229,14 +245,18 @@ body {
 .card {
     border: none;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
     overflow: hidden;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 2;
 }
 
 .card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
 
 .card-header {
@@ -251,22 +271,27 @@ body {
 .filter-buttons {
     text-align: center;
     margin-bottom: 3rem;
+    position: relative;
+    z-index: 2;
 }
 
 .filter-btn {
-    background: transparent;
-    border: 2px solid var(--secondary-color);
-    color: var(--secondary-color);
+    background: rgba(255,255,255,0.9);
+    border: 2px solid rgba(255,255,255,0.8);
+    color: #333;
     padding: 10px 20px;
     margin: 0 5px;
     border-radius: 25px;
     transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
 .filter-btn:hover,
 .filter-btn.active {
-    background: var(--secondary-color);
-    color: black;
+    background: rgba(255,255,255,1);
+    color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* Project Grid */
@@ -274,20 +299,23 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
 .project-card {
-    background: white;
+    background: rgba(255,255,255,0.95);
     border-radius: 15px;
     padding: 2rem;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
     cursor: pointer;
+    backdrop-filter: blur(10px);
 }
 
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
 }
 
 .project-number {
@@ -305,10 +333,14 @@ body {
 
 /* Contact */
 .contact-info {
-    background: var(--bg-gradient);
-    color: black;
+    background: rgba(255,255,255,0.95);
+    color: #333;
     border-radius: 15px;
     padding: 3rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 2;
 }
 
 .contact-item {
@@ -325,10 +357,29 @@ body {
 
 /* Footer */
 .footer {
-    background: var(--primary-color);
-    color: black;
+    background: var(--bg-gradient);
+    color: white;
     text-align: center;
     padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
+    animation: float 6s ease-in-out infinite;
+}
+
+.footer > * {
+    position: relative;
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 /* Animations */
@@ -361,20 +412,35 @@ body {
 
 /* ===== 網站統計區域樣式 ===== */
 .statistics-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-gradient);
     padding: 25px 0;
     margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.statistics-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
+    animation: float 6s ease-in-out infinite;
 }
 
 .statistics-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     padding: 20px 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     max-width: 700px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
 .statistics-title {
     text-align: center;
     color: #333;
@@ -478,12 +544,7 @@ body {
 
 /* ===== 柔和背景樣式 ===== */
 .bg-soft {
-    background: linear-gradient(135deg, 
-        rgba(102, 126, 234, 0.03) 0%, 
-        rgba(118, 75, 162, 0.05) 25%,
-        rgba(255, 255, 255, 0.8) 50%,
-        rgba(102, 126, 234, 0.03) 75%,
-        rgba(118, 75, 162, 0.05) 100%);
+    background: var(--bg-gradient);
     position: relative;
     overflow: hidden;
 }
@@ -495,10 +556,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><polygon fill="rgba(255,255,255,0.1)" points="1000,100 1000,0 0,100"/></svg>');
+    animation: float 6s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
 }
@@ -510,8 +569,8 @@ body {
 
 /* 為專案和聯絡區域添加微妙的邊框 */
 .bg-soft .section-title {
-    color: #4a5568;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .bg-soft .card,
