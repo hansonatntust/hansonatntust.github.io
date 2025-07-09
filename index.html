@@ -201,7 +201,7 @@
         // ====== 使用者資料區域 - 請修改以下內容 ======
         const profileData = {
             name: "韓玉森",
-            title: "做大做強做集團",
+            title: "Worldline 台灣世通沃聯科技股份有限公司",
             expertise: "生旦淨末丑、神仙老虎狗、龍套上下手、什麼我都有",
             education: "國立臺灣科技大學資訊管理系碩士",
             email: "M11209923@mail.ntust.edu.tw",
@@ -255,6 +255,7 @@
             titleElement.innerHTML = profileData.title.split('').map((char, index) => {
                 return `<span class="magnify-char" style="animation-delay: ${index * 0.5}s">${char}</span>`;
             }).join('');
+            titleElement.innerHTML += ' <img src="pic/WL_logo_turquoise.png" alt="Worldline Logo" style="height: 25px; vertical-align: middle;">';
 
             document.getElementById('expertise').textContent = profileData.expertise;
             document.getElementById('education').textContent = profileData.education;
