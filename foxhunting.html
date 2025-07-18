@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>狐狸與洞邏輯模擬</title>
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { font-family: 'Microsoft JhengHei', Arial, sans-serif; background: #f8f8f8; margin: 0; padding: 0 0 2em 0; }
+        .container {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 0 2vw;
+        }
+        h2 { font-size: 2em; margin: 1.2em 0 0.7em 0; text-align: center; letter-spacing: 1px; }
+        button { font-size: 1.1em; padding: 0.5em 1.5em; margin: 1em auto; display: block; border-radius: 6px; border: none; background: #ffe082; color: #333; box-shadow: 0 1px 4px #0001; transition: background 0.2s; }
+        button:active { background: #ffd54f; }
+        #visual { margin-bottom: 2.5em; }
+        #desc { background: #fffbe7; color: #333; padding: 0.7em 1em; margin: 2.2em auto 1em auto; border-radius: 6px; min-height: 2.5em; font-size: 1.1em; border: 1px solid #ffe082; max-width: 480px; box-sizing: border-box; transition: margin-top 0.2s; }
+        .holes-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 2vw; }
+        .hole { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 14vw; max-width: 56px; min-width: 36px; height: 14vw; max-height: 56px; min-height: 36px; margin: 2px; text-align: center; font-size: 2.1em; border-radius: 50%; border: 2px solid #888; vertical-align: middle; background: #fff; box-sizing: border-box; transition: background 0.2s, border 0.2s; }
+        .hole .hole-num { font-size: 0.7em; color: #888; margin-top: -2px; }
+        @media (max-width: 900px) {
+            .container { max-width: 98vw; }
+            h2 { font-size: 1.4em; }
+            #desc { font-size: 1em; }
+        }
+        @media (max-width: 600px) {
+            .container { max-width: 100vw; padding: 0 1vw; }
+            h2 { font-size: 1.1em; }
+            #desc { font-size: 0.98em; padding: 0.6em 0.5em; margin-top: 1.5em; }
+            .hole { font-size: 7vw; min-width: 28px; min-height: 28px; max-width: 44px; max-height: 44px; }
+        }
+        @media (max-width: 400px) {
+            .hole { font-size: 9vw; min-width: 20px; min-height: 20px; max-width: 32px; max-height: 32px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>狐狸與洞邏輯模擬</h2>
+        <div style="display:flex;justify-content:center;gap:1em;margin-bottom:1em;">
+            <button id="simBtn" onclick="startSimulation()">模擬模式</button>
+            <button id="catchBtn" onclick="startCatchMode()">抓狐狸模式</button>
+        </div>
+        <div id="visual" style="margin-bottom:0.5em;"></div>
+        <div id="desc" style="background:#fffbe7;color:#333;padding:0.7em 1em;margin-bottom:1em;border-radius:6px;min-height:2.5em;font-size:1.1em;border:1px solid #ffe082;"></div>
+        <div id="catchControls" style="display:none;justify-content:center;gap:1em;margin-top:1em;"></div>
+
+    </div>
+
+
+    <script>
+    // 狐狸類別：負責狐狸的位置與移動
+    class Fox {
+        constructor(startingPosition) {
+            this.currentPosition = startingPosition; // 狐狸目前所在洞口
+        }
+
+        // 狐狸每晚必須移動到相鄰的洞口
+        move() {
+            const pos = this.currentPosition;
+            let options = [];
+            if (pos === 1) {
+                options = [2]; // 洞1只能移到洞2
+            } else if (pos === 5) {
+                options = [4]; // 洞5只能移到洞4
+            } else {
+                options = [pos - 1, pos + 1]; // 其他洞可往左或右
+            }
+            // 隨機選擇一個可移動的洞口
+            this.currentPosition = options[Math.floor(Math.random() * options.length)];
+        }
+    }
+
+    // 獵人類別：負責獵人的查找策略
+    class Hunter {
+        constructor(strategy) {
+            this.strategy = strategy; // 查找洞口的順序陣列
+        }
+
+        // 回傳指定天數要查的洞口（1-based）
+        getCheck(day) {
+            return this.strategy[day - 1];
+        }
+    }
+
+    // 畫出當前洞口狀態
+
+function drawHoles(foxPos, hunterPos, day, isNight, caught) {
+    // 先產生數字列
+    let numRow = '<div class="holes-num-row" style="display:flex;justify-content:center;gap:2vw;margin-bottom:2px;">';
+    for (let i = 1; i <= 5; i++) {
+        numRow += `<div style="width:14vw;max-width:56px;min-width:36px;text-align:center;font-size:1em;color:#888;">${i}</div>`;
+    }
+    numRow += '</div>';
+    // 洞口圖示
+    const holeIcons = [];
+    for (let i = 1; i <= 5; i++) {
+        let style = 'hole';
+        let extraStyle = '';
+        let foxHere = i === foxPos;
+        let hunterHere = i === hunterPos && !isNight;
+        let content = '';
+        // 白天/夜晚底色
+        let baseBg = isNight ? '#e0e0e0' : '#fff';
+        // 抓到時顯示特殊圖
+        if (foxHere && hunterHere && caught) {
+            content = '<span style="font-size:1.5em;">💥</span>';
+            extraStyle = 'background:#ffecb3;border:2px solid #e65100;';
+        } else {
+            // 洞內同時有狐狸和獵人
+            if (foxHere && hunterHere) {
+                content = '<span style="font-size:1.3em;">🦊</span><span style="font-size:1.3em;">🎯</span>';
+                extraStyle = 'background:#ffe082;';
+            } else if (foxHere) {
+                content = '<span style="font-size:1.5em;">🦊</span>';
+                extraStyle = 'background:#ffe082;';
+            } else if (hunterHere) {
+                content = '<span style="font-size:1.5em;">🎯</span>';
+                extraStyle = 'background:#b3e5fc;';
+            } else {
+                content = '';
+                extraStyle = `background:${baseBg};`;
+            }
+        }
+        holeIcons.push(`<div class="${style}" style="${extraStyle}"><div style="height:1.2em;"></div><div style="display:flex;align-items:center;justify-content:center;height:1.5em;">${content}</div></div>`);
+    }
+    document.getElementById('visual').innerHTML = numRow + `<div class='holes-row' style='margin-bottom:6px;text-align:center;'>${holeIcons.join('')}</div>`;
+}
+
+    // 模擬函式：執行一次遊戲流程，並回傳每一步狀態
+    function runVisual(foxStartPosition, hunterStrategy) {
+        const fox = new Fox(foxStartPosition);
+        const hunter = new Hunter(hunterStrategy);
+        const steps = [];
+        for (let day = 1; day <= hunterStrategy.length; day++) {
+            const checkHole = hunter.getCheck(day);
+            steps.push({
+                type: 'day',
+                day,
+                fox: fox.currentPosition,
+                hunter: checkHole,
+                caught: checkHole === fox.currentPosition
+            });
+            if (checkHole === fox.currentPosition) break;
+            if (day < hunterStrategy.length) {
+                fox.move();
+                steps.push({
+                    type: 'night',
+                    day,
+                    fox: fox.currentPosition,
+                    hunter: null,
+                    caught: false
+                });
+            }
+        }
+        return steps;
+    }
+
+    // 啟動模擬主流程（含圖像化）
+
+let simState = { start: 1, hunterStrategy: [2, 3, 4, 4, 3, 2], steps: [], stepIdx: 0, running: false };
+
+async function startSimulation() {
+    simState = { start: 1, hunterStrategy: [2, 3, 4, 4, 3, 2], steps: [], stepIdx: 0, running: true };
+    const visualDiv = document.getElementById('visual');
+    const descDiv = document.getElementById('desc');
+    const simBtn = document.getElementById('simBtn');
+    const catchBtn = document.getElementById('catchBtn');
+    visualDiv.innerHTML = '';
+    descDiv.textContent = '';
+    simBtn.disabled = true;
+    catchBtn.disabled = true;
+    simBtn.textContent = '模擬中...';
+    await runOneSimulation();
+    simBtn.disabled = false;
+    catchBtn.disabled = false;
+    simBtn.textContent = '模擬模式';
+}
+
+// 抓狐狸模式狀態
+let catchState = null;
+function startCatchMode() {
+    // UI切換
+    document.getElementById('simBtn').disabled = true;
+    document.getElementById('catchBtn').disabled = true;
+    // 狐狸隨機選一個洞
+    catchState = {
+        fox: new Fox(Math.floor(Math.random()*5)+1),
+        hunterPos: null,
+        day: 1,
+        running: true,
+        msg: ''
+    };
+    document.getElementById('desc').textContent = '請選擇要檢查的洞口（1~5）：';
+    drawCatchHoles();
+    showCatchControls();
+}
+// 不再需要 showCatchStartSelector
+// 不再需要 catchStart
+function drawCatchHoles() {
+    // 顯示獵人與狐狸，若抓到則顯示💥
+    let numRow = '<div class="holes-num-row" style="display:flex;justify-content:center;gap:2vw;margin-bottom:2px;">';
+    for (let i = 1; i <= 5; i++) {
+        numRow += `<div style="width:14vw;max-width:56px;min-width:36px;text-align:center;font-size:1em;color:#888;">${i}</div>`;
+    }
+    numRow += '</div>';
+    const holeIcons = [];
+    let caught = catchState && !catchState.running && catchState.hunterPos === catchState.fox.currentPosition;
+    for (let i = 1; i <= 5; i++) {
+        let style = 'hole';
+        let extraStyle = '';
+        let hunterHere = i === catchState.hunterPos;
+        let foxHere = i === catchState.fox.currentPosition;
+        let content = '';
+        let baseBg = '#fff';
+        if (hunterHere && foxHere && caught) {
+            content = '<span style="font-size:1.5em;">💥</span>';
+            extraStyle = 'background:#ffecb3;border:2px solid #e65100;';
+        } else if (hunterHere && foxHere) {
+            content = '<span style="font-size:1.3em;">🦊</span><span style="font-size:1.3em;">🎯</span>';
+            extraStyle = 'background:#ffe082;';
+        } else if (foxHere) {
+            content = '<span style="font-size:1.5em;">🦊</span>';
+            extraStyle = 'background:#ffe082;';
+        } else if (hunterHere) {
+            content = '<span style="font-size:1.5em;">🎯</span>';
+            extraStyle = 'background:#b3e5fc;';
+        } else {
+            content = '';
+            extraStyle = `background:${baseBg};`;
+        }
+        holeIcons.push(`<div class="${style}" style="${extraStyle}"><div style="height:1.2em;"></div><div style="display:flex;align-items:center;justify-content:center;height:1.5em;">${content}</div></div>`);
+    }
+    document.getElementById('visual').innerHTML = numRow + `<div class='holes-row' style='margin-bottom:6px;text-align:center;'>${holeIcons.join('')}</div>`;
+}
+function showCatchControls() {
+    const controls = document.getElementById('catchControls');
+    controls.style.display = 'flex';
+    controls.innerHTML = '';
+    // 顯示1~5數字按鈕
+    for (let i = 1; i <= 5; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.style.minWidth = '2.5em';
+        btn.onclick = () => checkHole(i);
+        controls.appendChild(btn);
+    }
+}
+
+
+function checkHole(holeNum) {
+    if (!catchState.running) return;
+    catchState.hunterPos = holeNum;
+    // 白天檢查
+    if (catchState.hunterPos === catchState.fox.currentPosition) {
+        catchState.running = false;
+        drawCatchHoles();
+        document.getElementById('desc').textContent = `恭喜！你在第${catchState.day}天於洞口${catchState.hunterPos}抓到狐狸！`;
+        document.getElementById('catchControls').innerHTML = '<button onclick="resetAll()">再玩一次</button>';
+    } else {
+        document.getElementById('desc').textContent = `第${catchState.day}天，沒抓到，夜晚狐狸移動...`;
+        drawCatchHoles();
+        setTimeout(()=>{
+            catchState.fox.move();
+            catchState.day++;
+            document.getElementById('desc').textContent = `第${catchState.day}天，請選擇要檢查的洞口。`;
+            drawCatchHoles();
+        }, 700);
+    }
+}
+
+function drawCatchHolesCaught() {
+    // 顯示抓到圖示
+    let numRow = '<div class="holes-num-row" style="display:flex;justify-content:center;gap:2vw;margin-bottom:2px;">';
+    for (let i = 1; i <= 5; i++) {
+        numRow += `<div style="width:14vw;max-width:56px;min-width:36px;text-align:center;font-size:1em;color:#888;">${i}</div>`;
+    }
+    numRow += '</div>';
+    const holeIcons = [];
+    for (let i = 1; i <= 5; i++) {
+        let style = 'hole';
+        let extraStyle = '';
+        let hunterHere = i === catchState.hunterPos;
+        let content = '';
+        let baseBg = '#fff';
+        if (hunterHere) {
+            content = '<span style="font-size:1.5em;">💥</span>';
+            extraStyle = 'background:#ffecb3;border:2px solid #e65100;';
+        } else {
+            content = '';
+            extraStyle = `background:${baseBg};`;
+        }
+        holeIcons.push(`<div class="${style}" style="${extraStyle}"><div style="height:1.2em;"></div><div style="display:flex;align-items:center;justify-content:center;height:1.5em;">${content}</div></div>`);
+    }
+    document.getElementById('visual').innerHTML = numRow + `<div class='holes-row' style='margin-bottom:6px;text-align:center;'>${holeIcons.join('')}</div>`;
+}
+function resetAll() {
+    document.getElementById('catchControls').style.display = 'none';
+    document.getElementById('catchControls').innerHTML = '';
+    document.getElementById('simBtn').disabled = false;
+    document.getElementById('catchBtn').disabled = false;
+    document.getElementById('desc').textContent = '';
+    document.getElementById('visual').innerHTML = '';
+}
+async function runOneSimulation() {
+    const { start, hunterStrategy } = simState;
+    const visualDiv = document.getElementById('visual');
+    const descDiv = document.getElementById('desc');
+    descDiv.textContent = '';
+    visualDiv.innerHTML = '';
+    simState.steps = runVisual(simState.start, hunterStrategy);
+    simState.stepIdx = 0;
+    for (let i = 0; i < simState.steps.length; i++) {
+        simState.stepIdx = i;
+        const s = simState.steps[i];
+        // 傳入 caught 參數，只有抓到時才為 true
+        drawHoles(s.fox, s.hunter, s.day, s.type === 'night', s.caught);
+        // 文字說明
+        let msg = '';
+        if (s.type === 'day') {
+            msg = `第${s.day}天：獵人檢查洞口${s.hunter}，狐狸在洞口${s.fox}。`;
+            if (s.caught) msg += `\n在第${s.day}天於洞口${s.fox}抓到狐狸！成功！`;
+        } else {
+            msg = `夜晚${s.day}：狐狸移動到洞口${s.fox}。`;
+        }
+        descDiv.textContent = msg;
+        if (s.caught) {
+            await new Promise(r => setTimeout(r, 700));
+            descDiv.textContent += '\n模擬結束';
+            return;
+        }
+        await new Promise(r => setTimeout(r, 700));
+    }
+    descDiv.textContent += '\n模擬結束';
+}
+    </script>
+</body>
+</html>
