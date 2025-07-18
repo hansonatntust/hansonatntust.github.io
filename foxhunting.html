@@ -34,6 +34,12 @@
         @media (max-width: 400px) {
             .hole { font-size: 9vw; min-width: 20px; min-height: 20px; max-width: 32px; max-height: 32px; }
         }
+        button:disabled {
+            background: #eee !important;
+            color: #aaa !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
     </style>
 </head>
 
@@ -42,7 +48,7 @@
         <h2>狐狸與洞邏輯模擬</h2>
         <div style="display:flex;justify-content:center;gap:1em;margin-bottom:1em;">
             <button id="simBtn" onclick="startSimulation()">模擬模式</button>
-            <button id="catchBtn" onclick="startCatchMode()">抓狐狸模式</button>
+            <button id="catchBtn" onclick="startCatchMode()">抓狐狸遊戲</button>
         </div>
         <div id="visual" style="margin-bottom:0.5em;"></div>
         <div id="desc" style="background:#fffbe7;color:#333;padding:0.7em 1em;margin-bottom:1em;border-radius:6px;min-height:2.5em;font-size:1.1em;border:1px solid #ffe082;"></div>
@@ -171,21 +177,19 @@ async function startSimulation() {
     const catchBtn = document.getElementById('catchBtn');
     visualDiv.innerHTML = '';
     descDiv.textContent = '';
-    simBtn.disabled = true;
-    catchBtn.disabled = true;
     simBtn.textContent = '模擬中...';
+    catchBtn.textContent = '抓狐狸遊戲';
+    // 隱藏選洞按鈕
+    document.getElementById('catchControls').style.display = 'none';
+    document.getElementById('catchControls').innerHTML = '';
     await runOneSimulation();
-    simBtn.disabled = false;
-    catchBtn.disabled = false;
     simBtn.textContent = '模擬模式';
+    catchBtn.textContent = '抓狐狸遊戲';
 }
 
 // 抓狐狸模式狀態
 let catchState = null;
 function startCatchMode() {
-    // UI切換
-    document.getElementById('simBtn').disabled = true;
-    document.getElementById('catchBtn').disabled = true;
     // 狐狸隨機選一個洞
     catchState = {
         fox: new Fox(Math.floor(Math.random()*5)+1),
@@ -195,6 +199,8 @@ function startCatchMode() {
         msg: ''
     };
     document.getElementById('desc').textContent = '請選擇要檢查的洞口（1~5）：';
+    document.getElementById('simBtn').textContent = '模擬模式';
+    document.getElementById('catchBtn').textContent = '抓狐狸遊戲';
     drawCatchHoles();
     showCatchControls();
 }
@@ -219,12 +225,6 @@ function drawCatchHoles() {
         if (hunterHere && foxHere && caught) {
             content = '<span style="font-size:1.5em;">💥</span>';
             extraStyle = 'background:#ffecb3;border:2px solid #e65100;';
-        } else if (hunterHere && foxHere) {
-            content = '<span style="font-size:1.3em;">🦊</span><span style="font-size:1.3em;">🎯</span>';
-            extraStyle = 'background:#ffe082;';
-        } else if (foxHere) {
-            content = '<span style="font-size:1.5em;">🦊</span>';
-            extraStyle = 'background:#ffe082;';
         } else if (hunterHere) {
             content = '<span style="font-size:1.5em;">🎯</span>';
             extraStyle = 'background:#b3e5fc;';
@@ -254,10 +254,13 @@ function showCatchControls() {
 function checkHole(holeNum) {
     if (!catchState.running) return;
     catchState.hunterPos = holeNum;
+    // 禁用所有洞口按鈕
+    const controls = document.getElementById('catchControls');
+    Array.from(controls.querySelectorAll('button')).forEach(btn => btn.disabled = true);
     // 白天檢查
     if (catchState.hunterPos === catchState.fox.currentPosition) {
         catchState.running = false;
-        drawCatchHoles();
+        drawCatchHolesCaught();
         document.getElementById('desc').textContent = `恭喜！你在第${catchState.day}天於洞口${catchState.hunterPos}抓到狐狸！`;
         document.getElementById('catchControls').innerHTML = '<button onclick="resetAll()">再玩一次</button>';
     } else {
@@ -268,6 +271,8 @@ function checkHole(holeNum) {
             catchState.day++;
             document.getElementById('desc').textContent = `第${catchState.day}天，請選擇要檢查的洞口。`;
             drawCatchHoles();
+            // 換日後恢復按鈕可用
+            Array.from(controls.querySelectorAll('button')).forEach(btn => btn.disabled = false);
         }, 700);
     }
 }
@@ -300,10 +305,10 @@ function drawCatchHolesCaught() {
 function resetAll() {
     document.getElementById('catchControls').style.display = 'none';
     document.getElementById('catchControls').innerHTML = '';
-    document.getElementById('simBtn').disabled = false;
-    document.getElementById('catchBtn').disabled = false;
     document.getElementById('desc').textContent = '';
     document.getElementById('visual').innerHTML = '';
+    // 直接重新開始抓狐狸遊戲
+    startCatchMode();
 }
 async function runOneSimulation() {
     const { start, hunterStrategy } = simState;
