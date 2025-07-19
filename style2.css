@@ -882,3 +882,106 @@ body {
             rgba(118, 75, 162, 0.02) 100%);
     }
 }
+
+/* 遊戲卡片特別樣式 */
+.game-card {
+    background: linear-gradient(135deg, #ff6b9d 0%, #4285f4 100%) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.game-card:hover::before {
+    opacity: 1;
+    animation: gameShimmer 1s ease-in-out;
+}
+
+@keyframes gameShimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5) !important;
+}
+
+.game-card .project-number {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    font-size: 1.5em !important;
+}
+
+.game-card h5 {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.game-card .text-muted {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.game-card .text-primary {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 0.5em;
+    transition: all 0.3s ease;
+}
+
+.game-card .text-primary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+/* 遊戲過濾按鈕樣式 */
+.game-filter {
+    background: linear-gradient(45deg, #ff6b9d, #4285f4) !important;
+    color: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-filter::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.game-filter:hover::before {
+    left: 100%;
+}
+
+.game-filter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+}
+
+.game-filter.active {
+    background: linear-gradient(45deg, #4285f4, #ff6b9d) !important;
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.5) !important;
+}

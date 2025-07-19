@@ -137,6 +137,7 @@
                 <button class="btn filter-btn" onclick="filterProjects('generative')">生成型AI</button>
                 <button class="btn filter-btn" onclick="filterProjects('agentic')">Agentic AI</button>
                 <button class="btn filter-btn" onclick="filterProjects('tools')">其他工具</button>
+                <button class="btn filter-btn game-filter" onclick="filterProjects('games')">🎮 小遊戲</button>
             </div>
 
             <!-- Projects Grid -->
@@ -233,7 +234,8 @@
             {id: 17, category: 'generative', title: 'Unit #17', description: '從頭打造 LLM - 生成型AI'},
             {id: 18, category: 'generative', title: 'Unit #18', description: 'RAG 簡介、LangChain - 生成型AI'},
             {id: 19, category: 'agentic', title: 'Unit #19', description: 'AI Agent, MCP, n8n - 代理型AI'},
-            {id: 20, category: 'agentic', title: 'Unit #20', description: '進階 n8n - 代理型AI'}
+            {id: 20, category: 'agentic', title: 'Unit #20', description: '進階 n8n - 代理型AI'},
+            {id: 'foxhunting', category: 'games', title: '🦊 狐狸與獵人', description: '策略思維挑戰遊戲 - 運用邏輯推理抓住狡猾的狐狸！', isGame: true}
         ];
 
         // Initialize page
@@ -287,12 +289,17 @@
             const filteredProjects = category === 'all' ? projects : projects.filter(p => p.category === category);
 
             grid.innerHTML = filteredProjects.map(project => {
+                const isGame = project.isGame;
+                const cardClass = isGame ? 'project-card game-card' : 'project-card';
+                const projectNumber = isGame ? '🎮' : project.id;
+                const clickText = isGame ? '點擊開始遊戲' : '點擊查看詳情';
+                
                 return `
-                    <div class="project-card" data-category="${project.category}" onclick="openProject(${project.id})">
-                        <div class="project-number">${project.id}</div>
+                    <div class="${cardClass}" data-category="${project.category}" onclick="openProject('${project.id}')">
+                        <div class="project-number">${projectNumber}</div>
                         <h5>${project.title}</h5>
                         <p class="text-muted">${project.description}</p>
-                        <span class="text-primary fw-bold" style="font-size: 1.1rem;">點擊查看詳情</span>
+                        <span class="text-primary fw-bold" style="font-size: 1.1rem;">${clickText}</span>
                     </div>
                 `;
             }).join('');
@@ -300,8 +307,13 @@
 
         // Open project details
         function openProject(id) {
-            // Navigate to unit.html with unit ID as parameter
-            window.location.href = `unit.html?unit=${id}`;
+            if (id === 'foxhunting') {
+                // Navigate to foxhunting game
+                window.location.href = 'foxhunting.html';
+            } else {
+                // Navigate to unit.html with unit ID as parameter
+                window.location.href = `unit.html?unit=${id}`;
+            }
         }
 
         // Scroll animations
