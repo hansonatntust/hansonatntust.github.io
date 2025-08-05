@@ -1,8 +1,24 @@
+// ====== 聊天機器人配置區域 ======
+const CHATBOT_CONFIG = {
+    // 🔧 營業狀態開關：true = 正常營業, false = 休業中
+    isOperating: false,
+    
+    // 📝 休業中顯示的訊息
+    closedMessage: '🚧 AI助教目前休業中，請稍後再來！\n\n如有緊急問題，請直接聯繫教授。',
+    
+    // 🎨 休業中的標題
+    closedTitle: '🤖 AI 助教 (休業中)',
+    
+    // 🎨 正常營業的標題
+    openTitle: '🤖 AI 助教 v4'
+};
+// ====== 配置區域結束 ======
+
 // ChatBot 類別
 class ChatBot {
     constructor() {
         // ⚠️ 重要：請替換為您的 n8n webhook URL
-        this.webhookUrl = 'https://8c34b9c4790b.ngrok-free.app/webhook/chat';
+        this.webhookUrl = 'https://7533967.ngrok-free.app/webhook/chat';
         
         // 初始化 session ID
         this.sessionId = this.getOrCreateSessionId();
@@ -357,7 +373,7 @@ class ChatBot {
                 
                 <div class="chatbot-panel" id="chatbotPanel">
                     <div class="chatbot-header">
-                        <div class="chatbot-title">❤️💕💖💘💗戀愛小天使❤️💕💖💘💗</div>
+                        <div class="chatbot-title">${CHATBOT_CONFIG.isOperating ? CHATBOT_CONFIG.openTitle : CHATBOT_CONFIG.closedTitle}</div>
                         <button class="chatbot-close" id="chatbotClose">
                             <i class="fas fa-times"></i>
                         </button>
@@ -365,7 +381,7 @@ class ChatBot {
                     
                     <div class="chat-messages" id="chatMessages">
                         <div class="message system">
-                            歡迎使用 愛情 助教！我可以回答您關於愛情或戀愛課程的任何問題。
+                            ${CHATBOT_CONFIG.isOperating ? '歡迎使用 AI 助教！我可以回答您關於欒斌教授或AI課程的任何問題。' : CHATBOT_CONFIG.closedMessage}
                         </div>
                     </div>
                     <div class="typing-indicator" id="typingIndicator">
@@ -479,6 +495,14 @@ class ChatBot {
         this.messageInput.value = '';
         this.sendButton.disabled = true;
         
+        // 檢查是否為休業中狀態
+        if (!CHATBOT_CONFIG.isOperating) {
+            setTimeout(() => {
+                this.addMessage(CHATBOT_CONFIG.closedMessage, 'system');
+            }, 500);
+            return;
+        }
+        
         // 顯示打字指示器
         this.showTypingIndicator();
         
@@ -582,7 +606,11 @@ class ChatBot {
         if (recentHistory.length === 0) {
             // 如果沒有歷史記錄，顯示歡迎訊息
             setTimeout(() => {
-                this.addMessage('你好，我是愛情小天使！有什麼關於愛情或戀愛的問題想要問我嗎？', 'ai');
+                if (CHATBOT_CONFIG.isOperating) {
+                    this.addMessage('你好，我是AI助教v4！有什麼關於欒斌教授或AI課程的問題想要問我嗎？', 'ai');
+                } else {
+                    this.addMessage(CHATBOT_CONFIG.closedMessage, 'system');
+                }
             }, 1000);
         }
     }
