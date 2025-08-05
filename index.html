@@ -308,10 +308,10 @@
         // Open project details
         function openProject(id) {
             if (id === 'foxhunting') {
-                // Navigate to foxhunting game
                 window.location.href = 'foxhunting.html';
+            } else if (id === 'tower-defense') {
+                window.location.href = 'tower-defense.html';
             } else {
-                // Navigate to unit.html with unit ID as parameter
                 window.location.href = `unit.html?unit=${id}`;
             }
         }
@@ -440,5 +440,6 @@
         
         updateLocalCounter();
     </script>    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script src="chatbot.js"></script>
 </body>
 </html>

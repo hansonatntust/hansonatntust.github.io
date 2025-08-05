@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense</title>
+    <link rel="stylesheet" href="tower-defense.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-panel">
+            <h2>Towers</h2>
+            <button id="buildCannon">Cannon (100G)</button>
+            <button id="buildFrostTower">Frost Tower (120G)</button>
+            <button id="buildMissileTower">Missile (200G)</button>
+            <button id="buildHeavyCannon">Heavy Cannon (300G)</button>
+            <div id="selected-tower-ui">
+                <div id="selected-tower-info">Click a tower to see details</div>
+                <button id="upgrade-button" style="display: none;">Upgrade</button>
+            </div>
+        </div>
+    </div>
+    <script src="tower-defense.js"></script>
+</body>
+</html>

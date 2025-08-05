@@ -1,0 +1,90 @@
+body {
+    background-color: #111;
+    color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+#game-container {
+    display: flex;
+    gap: 20px;
+}
+
+canvas {
+    background-color: #222;
+    border: 2px solid #0ff;
+    box-shadow: 0 0 15px #0ff;
+}
+
+#ui-panel {
+    width: 200px;
+    padding: 15px;
+    background-color: #2a2a2a;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#ui-panel h2 {
+    text-align: center;
+    margin-top: 0;
+    color: #0ff;
+}
+
+#ui-panel button {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#ui-panel button:hover {
+    background-color: #555;
+}
+
+#buildMissileTower {
+    background-color: #8B0000; /* Dark Red */
+}
+
+#buildMissileTower:hover {
+    background-color: #B22222; /* Firebrick */
+}
+
+#buildHeavyCannon {
+    background-color: #4B0082; /* Indigo */
+}
+
+#buildHeavyCannon:hover {
+    background-color: #8A2BE2; /* Blue Violet */
+}
+
+#selected-tower-ui {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border: 1px dashed #0ff;
+    text-align: center;
+}
+
+#selected-tower-info {
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+#upgrade-button {
+    width: 100%;
+    background-color: #008000; /* Green */
+}
+
+#upgrade-button:hover {
+    background-color: #006400; /* Darker Green */
+}
