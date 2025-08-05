@@ -2,7 +2,7 @@
 class ChatBot {
     constructor() {
         // ⚠️ 重要：請替換為您的 n8n webhook URL
-        this.webhookUrl = 'https://8c34b9c4790b.ngrok-free.app/webhook-test/chat';
+        this.webhookUrl = 'https://8c34b9c4790b.ngrok-free.app/webhook/chat';
         
         // 初始化 session ID
         this.sessionId = this.getOrCreateSessionId();
@@ -357,7 +357,7 @@ class ChatBot {
                 
                 <div class="chatbot-panel" id="chatbotPanel">
                     <div class="chatbot-header">
-                        <div class="chatbot-title">🤖 AI 助教 v4</div>
+                        <div class="chatbot-title">❤️💕💖💘💗戀愛小天使❤️💕💖💘💗</div>
                         <button class="chatbot-close" id="chatbotClose">
                             <i class="fas fa-times"></i>
                         </button>
@@ -365,10 +365,9 @@ class ChatBot {
                     
                     <div class="chat-messages" id="chatMessages">
                         <div class="message system">
-                            歡迎使用 AI 助教！我可以回答您關於欒斌教授或AI課程的任何問題。
+                            歡迎使用 愛情 助教！我可以回答您關於愛情或戀愛課程的任何問題。
                         </div>
                     </div>
-                    
                     <div class="typing-indicator" id="typingIndicator">
                         <div class="typing-dots">
                             <div class="typing-dot"></div>
@@ -583,7 +582,7 @@ class ChatBot {
         if (recentHistory.length === 0) {
             // 如果沒有歷史記錄，顯示歡迎訊息
             setTimeout(() => {
-                this.addMessage('你好，我是AI助教v4！有什麼關於欒斌教授或AI課程的問題想要問我嗎？', 'ai');
+                this.addMessage('你好，我是愛情小天使！有什麼關於愛情或戀愛的問題想要問我嗎？', 'ai');
             }, 1000);
         }
     }
