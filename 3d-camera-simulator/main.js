@@ -9,6 +9,12 @@ let shotPreviewRenderer, shotPreviewContainer;
 let targetObject;
 let shotRig; // 攝影機載具（用來同時移動相機與相機外觀模型）
 
+// 時間軸 / 關鍵幀
+let keyframes = [];
+let defaultKFDuration = 1200;
+let isPlayingTimeline = false;
+let activeTimelineTweens = [];
+
 const mainContainer = document.getElementById('main-canvas-container');
 const initialShotCamPos = new THREE.Vector3(0, 2, 10); // 虛擬攝影機初始位置（看向中心目標）
 
@@ -121,47 +127,74 @@ function createGUI() {
 
     // 運鏡（以相機自身座標系移動）
     const moveParams = {
-        'Dolly In': () => animateMove({ z: 5 }, { mode: 'relative' }),
-        'Dolly Out': () => animateMove({ z: -5 }, { mode: 'relative' }),
-        'Truck Left': () => animateMove({ x: -3 }, { mode: 'relative' }),
-        'Truck Right': () => animateMove({ x: 3 }, { mode: 'relative' }),
-        'Pedestal Up': () => animateMove({ y: 3 }, { mode: 'relative' }),
-        'Pedestal Down': () => animateMove({ y: -3 }, { mode: 'relative' }),
-        'Arc Left (90°)': () => animateArc(Math.PI / 2),
-        'Arc Right (90°)': () => animateArc(-Math.PI / 2),
-        'Pan Left (45°)': () => animatePanTilt({ yaw: Math.PI / 4 }),
-        'Pan Right (45°)': () => animatePanTilt({ yaw: -Math.PI / 4 }),
-        'Tilt Up (22.5°)': () => animatePanTilt({ pitch: Math.PI / 8 }),
-        'Tilt Down (22.5°)': () => animatePanTilt({ pitch: -Math.PI / 8 }),
+        '推進（Dolly In）': () => animateMove({ z: 5 }, { mode: 'relative' }),
+        '後退（Dolly Out）': () => animateMove({ z: -5 }, { mode: 'relative' }),
+        '平移左（Truck Left）': () => animateMove({ x: -3 }, { mode: 'relative' }),
+        '平移右（Truck Right）': () => animateMove({ x: 3 }, { mode: 'relative' }),
+        '升高（Pedestal Up）': () => animateMove({ y: 3 }, { mode: 'relative' }),
+        '降低（Pedestal Down）': () => animateMove({ y: -3 }, { mode: 'relative' }),
+        '繞行左 90°（Arc Left）': () => animateArc(Math.PI / 2),
+        '繞行右 90°（Arc Right）': () => animateArc(-Math.PI / 2),
+        '搖攝左 45°（Pan Left）': () => animatePanTilt({ yaw: Math.PI / 4 }),
+        '搖攝右 45°（Pan Right）': () => animatePanTilt({ yaw: -Math.PI / 4 }),
+        '俯仰上 22.5°（Tilt Up）': () => animatePanTilt({ pitch: Math.PI / 8 }),
+        '俯仰下 22.5°（Tilt Down）': () => animatePanTilt({ pitch: -Math.PI / 8 }),
     };
-    const movements = gui.addFolder('運鏡手法 (Movement)');
+    const movements = gui.addFolder('運鏡手法');
     Object.keys(moveParams).forEach(k => movements.add(moveParams, k));
     movements.open();
 
     // 拍攝距離
     const distanceParams = {
-        'WIDER-SHOT': () => animateMoveTo({ x: 0, y: 3, z: 12 }),
-        'MEDIUM-SHOT': () => animateMoveTo({ x: 0, y: 2, z: 6 }),
-        'CLOSE-SHOT': () => animateMoveTo({ x: 0, y: 1.5, z: 3 }),
+        '遠景（WIDER-SHOT）': () => animateMoveTo({ x: 0, y: 3, z: 12 }),
+        '中景（MEDIUM-SHOT）': () => animateMoveTo({ x: 0, y: 2, z: 6 }),
+        '近景（CLOSE-SHOT）': () => animateMoveTo({ x: 0, y: 1.5, z: 3 }),
     };
-    const distance = gui.addFolder('拍攝距離 (Shot Distance)');
+    const distance = gui.addFolder('拍攝距離');
     Object.keys(distanceParams).forEach(k => distance.add(distanceParams, k));
     distance.open();
 
     // 拍攝角度
     const angleParams = {
-        'Eye Level': () => animateMoveTo({ x: 0, y: 1.5, z: 8 }),
-        'High Angle': () => animateMoveTo({ x: 0, y: 8, z: 5 }),
-        'Low Angle': () => animateMoveTo({ x: 0, y: 0.5, z: 5 }),
-        "Bird's-eye": () => animateMoveTo({ x: 0, y: 15, z: 0.1 }), // z=0.1 避免萬向節鎖
+        '平視（Eye Level）': () => animateMoveTo({ x: 0, y: 1.5, z: 8 }),
+        '高角度（High Angle）': () => animateMoveTo({ x: 0, y: 8, z: 5 }),
+        '低角度（Low Angle）': () => animateMoveTo({ x: 0, y: 0.5, z: 5 }),
+        '鳥瞰（Bird\'s-eye）': () => animateMoveTo({ x: 0, y: 15, z: 0.1 }), // z=0.1 避免萬向節鎖
     };
-    const angles = gui.addFolder('拍攝角度 (Shot Angle)');
+    const angles = gui.addFolder('拍攝角度');
     Object.keys(angleParams).forEach(k => angles.add(angleParams, k));
     angles.open();
+
+    // 時間軸 / 關鍵幀
+    const timelineState = {
+        '每幀時長(ms)': defaultKFDuration,
+        '循環播放': false,
+        '關鍵幀數': 0,
+        '加入關鍵幀': () => {
+            addKeyframe(timelineState['每幀時長(ms)']);
+            timelineState['關鍵幀數'] = keyframes.length;
+        },
+        '播放': () => playTimeline(timelineState['循環播放']),
+        '停止': () => stopTimeline(),
+        '清除全部': () => { keyframes = []; timelineState['關鍵幀數'] = 0; },
+        '移除最後一幀': () => { if (keyframes.length>0) { keyframes.pop(); timelineState['關鍵幀數']=keyframes.length; } },
+    };
+
+    const timeline = gui.addFolder('時間軸 / 關鍵幀');
+    timeline.add(timelineState, '每幀時長(ms)', 200, 5000, 100).onChange(v => defaultKFDuration = v);
+    timeline.add(timelineState, '循環播放');
+    timeline.add(timelineState, '關鍵幀數').listen();
+    timeline.add(timelineState, '加入關鍵幀');
+    timeline.add(timelineState, '播放');
+    timeline.add(timelineState, '停止');
+    timeline.add(timelineState, '清除全部');
+    timeline.add(timelineState, '移除最後一幀');
+    timeline.open();
 }
 
 // ---- 運鏡：以相機自身座標系移動（Dolly/Truck/Pedestal）----
 function animateMove(move, options = {}) {
+    if (isPlayingTimeline) return;
     const duration = options.duration ?? 1000;
     const mode = options.mode ?? 'relative'; // 'relative' | 'absolute'
 
@@ -203,6 +236,7 @@ function animateMove(move, options = {}) {
 
 // ---- 運鏡：移動到絕對位置（用於距離/角度）----
 function animateMoveTo(pos, duration = 1000) {
+    if (isPlayingTimeline) return;
     const start = shotRig.position.clone();
     const end = new THREE.Vector3(
         pos.x ?? start.x,
@@ -220,7 +254,8 @@ function animateMoveTo(pos, duration = 1000) {
 }
 
 // ---- 運鏡：圍繞目標 Arc （水平繞行）----
-function animateArc(angle) {
+function animateArc(angle, duration = 1500) {
+    if (isPlayingTimeline) return;
     const pivot = targetObject.position.clone();
     const start = shotRig.position.clone();
     const rel = start.clone().sub(pivot);
@@ -229,7 +264,7 @@ function animateArc(angle) {
 
     const state = { a: 0 };
     new TWEEN.Tween(state)
-        .to({ a: angle }, 1500)
+        .to({ a: angle }, duration)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(() => {
             const a = startAngle + state.a;
@@ -242,6 +277,7 @@ function animateArc(angle) {
 
 // ---- 運鏡：Pan / Tilt （原地旋轉鏡頭）----
 function animatePanTilt({ yaw = 0, pitch = 0 }, duration = 1000) {
+    if (isPlayingTimeline) return;
     // 以 shotCamera 的當前旋轉為基礎做增量
     const startEuler = new THREE.Euler().copy(shotCamera.rotation);
     const endEuler = new THREE.Euler(
@@ -259,6 +295,71 @@ function animatePanTilt({ yaw = 0, pitch = 0 }, duration = 1000) {
             shotCamera.rotation.set(state.x, state.y, state.z, 'YXZ');
         })
         .start();
+}
+
+// ---- 時間軸 / 關鍵幀 API ----
+function addKeyframe(duration = defaultKFDuration) {
+    const kf = {
+        position: shotRig.position.clone(),
+        rotation: shotCamera.quaternion.clone(),
+        duration: Math.max(0, Number(duration) || defaultKFDuration),
+    };
+    keyframes.push(kf);
+}
+
+function stopTimeline() {
+    isPlayingTimeline = false;
+    activeTimelineTweens.forEach(t => t.stop());
+    activeTimelineTweens = [];
+}
+
+function playTimeline(loop = false) {
+    if (keyframes.length < 2) return;
+    // 停止現有動畫，避免干擾
+    stopTimeline();
+    TWEEN.removeAll();
+
+    // 將相機狀態設為首幀
+    const first = keyframes[0];
+    shotRig.position.copy(first.position);
+    shotCamera.quaternion.copy(first.rotation);
+
+    // 建立每段 tween（位置與旋轉一起插值）
+    let chain = null;
+    isPlayingTimeline = true;
+
+    for (let i = 1; i < keyframes.length; i++) {
+        const prev = keyframes[i - 1];
+        const next = keyframes[i];
+        const state = { t: 0 };
+        const seg = new TWEEN.Tween(state)
+            .to({ t: 1 }, Math.max(0, Number(next.duration) || defaultKFDuration))
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(() => {
+                const pos = new THREE.Vector3().lerpVectors(prev.position, next.position, state.t);
+                shotRig.position.copy(pos);
+                const q = new THREE.Quaternion();
+                q.slerpQuaternions(prev.rotation, next.rotation, state.t);
+                shotCamera.quaternion.copy(q);
+            });
+
+        activeTimelineTweens.push(seg);
+        if (chain) chain.chain(seg);
+        chain = seg;
+    }
+
+    if (chain) {
+        chain.onComplete(() => {
+            isPlayingTimeline = false;
+            if (loop) {
+                playTimeline(true);
+            }
+        });
+        // 啟動第一段（activeTimelineTweens[0]）
+        if (activeTimelineTweens.length > 0) {
+            activeTimelineTweens[0].start();
+        }
+    }
 }
 
 // ---- 視窗大小調整 ----
