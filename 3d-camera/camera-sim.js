@@ -1,5 +1,6 @@
 import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
 
 // Status: initialize DOM hooks and base state
 const ui = {
@@ -13,6 +14,10 @@ const ui = {
   durationVal: document.getElementById('durationVal'),
   focal: document.getElementById('focal'),
   focalVal: document.getElementById('focalVal'),
+  builtinObject: document.getElementById('builtinObject'),
+  modelFile: document.getElementById('modelFile'),
+  modelScale: document.getElementById('modelScale'),
+  modelScaleVal: document.getElementById('modelScaleVal'),
 };
 
 const canvases = {
@@ -77,6 +82,94 @@ card.rotation.y = rad(30);
 const lookAtPos = new THREE.Vector3(0, 1.7, 0);
 
 [base, torso, head, nose, stand, card].forEach((o) => target.add(o));
+
+// Built-in mannequin parts reference
+const mannequinParts = [base, torso, head, nose, stand, card];
+let primitiveMesh = null; // for built-in primitives
+let loadedModel = null;   // for GLTF/GLB model
+
+function clearTargetChildren() {
+  // remove all children but do not dispose materials/geometries of mannequin
+  while (target.children.length) target.remove(target.children[0]);
+}
+
+function restOnGround() {
+  // Place target so its bounding box min.y == 0
+  const box = new THREE.Box3().setFromObject(target);
+  if (isFinite(box.min.y)) {
+    target.position.y -= box.min.y;
+  }
+}
+
+function updateLookAtFromTarget() {
+  const box = new THREE.Box3().setFromObject(target);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  const headish = Math.max(0.8, box.min.y + size.y * 0.6);
+  lookAtPos.set(0, headish, 0);
+}
+
+function setMannequin() {
+  clearTargetChildren();
+  mannequinParts.forEach((o) => target.add(o));
+  if (primitiveMesh) { primitiveMesh.geometry?.dispose?.(); primitiveMesh.material?.dispose?.(); primitiveMesh = null; }
+  loadedModel = null;
+  target.scale.set(1,1,1);
+  target.position.set(0,0,0);
+  restOnGround();
+  updateLookAtFromTarget();
+  updatePathPreview();
+}
+
+function setPrimitive(type) {
+  clearTargetChildren();
+  if (primitiveMesh) { primitiveMesh.geometry?.dispose?.(); primitiveMesh.material?.dispose?.(); }
+  let geom;
+  const mat = new THREE.MeshStandardMaterial({ color: 0x8aa0ff, roughness: 0.5, metalness: 0.1 });
+  switch(type){
+    case 'cube': geom = new THREE.BoxGeometry(1,1,1); break;
+    case 'sphere': geom = new THREE.SphereGeometry(0.6, 32, 16); break;
+    case 'cylinder': geom = new THREE.CylinderGeometry(0.5, 0.5, 1.2, 32); break;
+    default: geom = new THREE.BoxGeometry(1,1,1); break;
+  }
+  primitiveMesh = new THREE.Mesh(geom, mat);
+  target.add(primitiveMesh);
+  loadedModel = null;
+  target.scale.set(1,1,1);
+  target.position.set(0,0,0);
+  restOnGround();
+  updateLookAtFromTarget();
+  updatePathPreview();
+}
+
+const gltfLoader = new GLTFLoader();
+async function setUserModelFromFile(file){
+  clearTargetChildren();
+  if (primitiveMesh) { primitiveMesh.geometry?.dispose?.(); primitiveMesh.material?.dispose?.(); primitiveMesh = null; }
+  const url = URL.createObjectURL(file);
+  try {
+    const gltf = await gltfLoader.loadAsync(url);
+    loadedModel = gltf.scene;
+    // Normalize pivot: center at origin and rest on ground
+    const box = new THREE.Box3().setFromObject(loadedModel);
+    const center = box.getCenter(new THREE.Vector3());
+    loadedModel.position.sub(center); // center to origin
+    // Update box after recentering
+    const box2 = new THREE.Box3().setFromObject(loadedModel);
+    loadedModel.position.y -= box2.min.y; // rest on ground
+    target.add(loadedModel);
+  } catch (e) {
+    console.error('模型載入失敗', e);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+  target.scale.set(parseFloat(ui.modelScale.value), parseFloat(ui.modelScale.value), parseFloat(ui.modelScale.value));
+  target.position.set(0,0,0);
+  restOnGround();
+  updateLookAtFromTarget();
+  updatePathPreview();
+}
+
 
 // Film camera (the simulated shot)
 const filmCam = new THREE.PerspectiveCamera(50, 16 / 9, 0.05, 100);
@@ -185,8 +278,31 @@ ui.focal.addEventListener('input', () => {
 ui.focal.dispatchEvent(new Event('input'));
 
 ['moveStyle', 'shotSize', 'angle'].forEach((id) => {
-  ui[id].addEventListener('change', updatePathPreview);
+  ui[id].addEventListener('change', () => { updatePathPreview(); });
 });
+
+ui.builtinObject.addEventListener('change', (e) => {
+  const v = e.target.value;
+  if (v === 'mannequin') setMannequin();
+  else setPrimitive(v);
+});
+
+ui.modelFile.addEventListener('change', (e) => {
+  const file = e.target.files?.[0];
+  if (file) setUserModelFromFile(file);
+});
+
+ui.modelScale.addEventListener('input', (e) => {
+  const s = parseFloat(e.target.value);
+  ui.modelScaleVal.textContent = s.toFixed(1);
+  target.scale.set(s, s, s);
+  restOnGround();
+  updateLookAtFromTarget();
+  updatePathPreview();
+});
+
+// initialize mannequin as default
+setMannequin();
 
 // Determine base distance and height from shot/angle
 function getBaseConfig() {

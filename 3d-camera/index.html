@@ -49,6 +49,26 @@
       </select>
     </div>
 
+    <div class="control-group">
+      <label for="builtinObject">3D 物件</label>
+      <select id="builtinObject">
+        <option value="mannequin">內建：人形展示</option>
+        <option value="cube">內建：立方體</option>
+        <option value="sphere">內建：球體</option>
+        <option value="cylinder">內建：圓柱</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="modelFile">上傳 GLB/GLTF 模型</label>
+      <input type="file" id="modelFile" accept=".glb,.gltf" />
+    </div>
+
+    <div class="control-group slider">
+      <label for="modelScale">物件縮放：<span id="modelScaleVal">1.0</span>x</label>
+      <input type="range" id="modelScale" min="0.1" max="5" step="0.1" value="1.0" />
+    </div>
+
     <div class="control-group inline">
       <button id="playPause">播放</button>
       <button id="reset">重置</button>
