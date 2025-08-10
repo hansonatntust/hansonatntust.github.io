@@ -18,6 +18,7 @@ const ui = {
   modelFile: document.getElementById('modelFile'),
   modelScale: document.getElementById('modelScale'),
   modelScaleVal: document.getElementById('modelScaleVal'),
+  modelNotice: document.getElementById('modelNotice'),
 };
 
 const canvases = {
@@ -142,8 +143,26 @@ function setPrimitive(type) {
   updatePathPreview();
 }
 
+function showNotice(msg, type = 'info') {
+  if (!ui.modelNotice) return;
+  ui.modelNotice.className = `notice ${type}`;
+  ui.modelNotice.innerHTML = msg;
+}
+
 const gltfLoader = new GLTFLoader();
 async function setUserModelFromFile(file){
+  const name = (file?.name || '').toLowerCase();
+  if (name.endsWith('.blend')) {
+    showNotice(`⚠️ 瀏覽器無法直接載入 .blend。<br>
+    請在 Blender 以 glTF 2.0 匯出：File → Export → glTF 2.0（.glb/.gltf）。<br>
+    建議使用 .glb（內嵌材質與貼圖，最穩定）。`, 'error');
+    return;
+  }
+  if (name.endsWith('.gltf')) {
+    showNotice(`ℹ️ 載入 .gltf 可能需要同路徑的貼圖/二進位檔。若使用單檔上傳，請改用 .glb 或將資源內嵌。`, 'info');
+  } else {
+    showNotice('','info');
+  }
   clearTargetChildren();
   if (primitiveMesh) { primitiveMesh.geometry?.dispose?.(); primitiveMesh.material?.dispose?.(); primitiveMesh = null; }
   const url = URL.createObjectURL(file);
@@ -204,18 +223,26 @@ function resizeRenderers() {
 
   const dpr = clamp(window.devicePixelRatio || 1, 1, 2);
 
-  rendererOmni.setSize(oRect.width, oRect.height, false);
+  // Fallback heights if layout not resolved yet
+  const oW = Math.max(1, oRect.width);
+  const oH = Math.max(1, oRect.height || (oW * 10/16));
+  const fW = Math.max(1, fRect.width);
+  const fH = Math.max(1, fRect.height || (fW * 9/16));
+
   rendererOmni.setPixelRatio(dpr);
-  observerCam.aspect = oRect.width / oRect.height;
+  rendererOmni.setSize(oW, oH, false);
+  observerCam.aspect = oW / oH;
   observerCam.updateProjectionMatrix();
 
-  rendererFilm.setSize(fRect.width, fRect.height, false);
   rendererFilm.setPixelRatio(dpr);
-  filmCam.aspect = fRect.width / fRect.height;
+  rendererFilm.setSize(fW, fH, false);
+  filmCam.aspect = fW / fH;
   filmCam.updateProjectionMatrix();
 }
 window.addEventListener('resize', resizeRenderers);
 resizeRenderers();
+// ensure one more resize after layout settles
+setTimeout(resizeRenderers, 0);
 
 // Path visualization
 const pathMaterial = new THREE.LineDashedMaterial({ color: 0x00e5ff, dashSize: 0.15, gapSize: 0.08 });
