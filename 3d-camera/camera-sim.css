@@ -1,0 +1,96 @@
+:root {
+  --bg: #0e0f13;
+  --panel: #141821;
+  --border: #263041;
+  --text: #e6edf3;
+  --subtle: #9fb0c3;
+  --acc: #00e5ff;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+  background: radial-gradient(1200px 600px at 50% -10%, #1a2030 0%, var(--bg) 50%, #0b0d11 100%);
+}
+
+.topbar {
+  padding: 16px 20px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+.topbar .subtitle { margin-top: 6px; color: var(--subtle); font-size: 13px; }
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(160px, 1fr));
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0));
+}
+
+.control-group { display: flex; flex-direction: column; gap: 6px; }
+.control-group.inline { flex-direction: row; align-items: center; gap: 10px; }
+.control-group.slider { grid-column: span 3; }
+
+label { font-size: 12px; color: var(--subtle); }
+select, input[type=range], button {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+button { cursor: pointer; transition: border-color .2s, box-shadow .2s; }
+button:hover { border-color: var(--acc); box-shadow: 0 0 0 2px rgba(0,229,255,.15) inset; }
+.checkbox { display: inline-flex; align-items: center; gap: 6px; user-select: none; }
+
+.viewport {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 20px 12px;
+}
+.pane {
+  position: relative;
+  background: #0d121a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+.pane-title { position: absolute; left: 16px; top: 10px; color: var(--subtle); font-size: 12px; z-index: 2; }
+
+canvas { display: block; width: 100%; height: 100%; border-radius: 8px; }
+#omniscient { aspect-ratio: 16/10; background: #0b0f17; }
+
+.film-view { position: relative; aspect-ratio: 16/9; }
+#film { background: #000; }
+.frame-overlay { pointer-events: none; position: absolute; inset: 0; }
+.letterbox { position: absolute; inset: 0; box-shadow: inset 0 0 0 2px rgba(255,255,255,.08); }
+.safe-areas { position: absolute; inset: 5% 4%; border: 1px dashed rgba(255,255,255,.15); border-radius: 4px; }
+.rule-of-thirds { position: absolute; inset: 0; }
+.rule-of-thirds::before, .rule-of-thirds::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.12) 1px, transparent 1px);
+  background-size: calc(100%/3) 100%, 100% calc(100%/3);
+  background-position: calc(100%/3) 0, 0 calc(100%/3);
+}
+
+.notes {
+  padding: 10px 20px 30px;
+  color: var(--subtle);
+  font-size: 13px;
+}
+
+@media (max-width: 1024px) {
+  .controls { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+  .control-group.slider { grid-column: span 2; }
+  .viewport { grid-template-columns: 1fr; }
+  #omniscient { aspect-ratio: 16/9; }
+}

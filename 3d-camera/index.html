@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 攝影運鏡模擬</title>
+  <link rel="stylesheet" href="camera-sim.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>3D 攝影運鏡模擬器</h1>
+    <div class="subtitle">左：3D 全知視角（可自由旋轉）｜右：2D 鏡頭取景畫面</div>
+  </header>
+
+  <section class="controls">
+    <div class="control-group">
+      <label for="moveStyle">運鏡手法</label>
+      <select id="moveStyle">
+        <option value="static">靜態 (Static)</option>
+        <option value="dollyIn">推鏡 Dolly In</option>
+        <option value="dollyOut">拉鏡 Dolly Out</option>
+        <option value="truckLeft">平移 Truck Left</option>
+        <option value="truckRight">平移 Truck Right</option>
+        <option value="arcLeft">圓弧 Arc Left</option>
+        <option value="arcRight">圓弧 Arc Right</option>
+        <option value="craneUp">搖臂 Crane Up</option>
+        <option value="craneDown">搖臂 Crane Down</option>
+        <option value="orbit360">環繞 Orbit 360°</option>
+        <option value="handheld">手持 Handheld</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="shotSize">拍攝距離</label>
+      <select id="shotSize">
+        <option value="wide">WIDER-SHOT（廣角/遠景）</option>
+        <option value="medium">MID-SHOT（中景）</option>
+        <option value="close">CLOSE-SHOT（近景）</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label for="angle">拍攝角度</label>
+      <select id="angle">
+        <option value="eye">平視</option>
+        <option value="low">低角度</option>
+        <option value="high">高角度</option>
+        <option value="bird">鳥瞰</option>
+      </select>
+    </div>
+
+    <div class="control-group inline">
+      <button id="playPause">播放</button>
+      <button id="reset">重置</button>
+      <label class="checkbox"><input type="checkbox" id="showHelpers" checked />顯示輔助線</label>
+    </div>
+
+    <div class="control-group slider">
+      <label for="duration">動作時長：<span id="durationVal">6.0</span>s</label>
+      <input type="range" id="duration" min="2" max="20" step="0.5" value="6" />
+    </div>
+
+    <div class="control-group slider">
+      <label for="focal">焦段（視角/FOV）：<span id="focalVal">50</span> mm 等效</label>
+      <input type="range" id="focal" min="18" max="120" step="1" value="50" />
+    </div>
+  </section>
+
+  <main class="viewport">
+    <div class="pane">
+      <div class="pane-title">3D 全知視角</div>
+      <canvas id="omniscient"></canvas>
+    </div>
+    <div class="pane">
+      <div class="pane-title">2D 取景畫面</div>
+      <div class="film-view">
+        <canvas id="film"></canvas>
+        <div class="frame-overlay">
+          <div class="safe-areas">
+            <div class="rule-of-thirds"></div>
+          </div>
+          <div class="letterbox"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="notes">
+    小提示：
+    1) 拖拽左側 3D 視圖可自由旋轉觀察拍攝機位與運動軌跡。
+    2) 右側即為鏡頭看到的 2D 畫面，會隨運鏡、拍攝距離、角度與焦段即時更新。
+  </footer>
+
+  <script type="module" src="camera-sim.js"></script>
+</body>
+</html>
