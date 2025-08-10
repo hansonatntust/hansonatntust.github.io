@@ -223,19 +223,20 @@
             {id: 6, category: 'cognitive', title: 'Unit #6', description: 'Face Landmark Detection - 感知型AI'},
             {id: 7, category: 'cognitive', title: 'Unit #7', description: 'Pose Landmark Detection - 感知型AI'},
             {id: 8, category: 'cognitive', title: 'Unit #8', description: 'Hand Landmarks - 感知型AI'},
-            {id: 9, category: 'cognitive', title: 'Unit #9', description: 'Gesture recognition - 感知型AI'},
+            {id: 9, category: 'cognitive', title: 'Gesture recognition - 感知型AI'},
             {id: 10, category: 'tools', title: 'Unit #10', description: 'Streamlit - 其他工具專案'},
             {id: 11, category: 'generative', title: 'Unit #11', description: 'Local LLM - 生成型AI'},
             {id: 12, category: 'generative', title: 'Unit #12', description: 'Neural Style Transfer - 生成型AI'},
-            {id: 13, category: 'generative', title: 'Unit #13', description: 'Torch - 生成型AI'},
-            {id: 14, category: 'generative', title: 'Unit #14', description: 'Arbitrary-image Real time NST - 生成型AI'},
-            {id: 15, category: 'cognitive', title: 'Unit #15', description: 'YOLO - 感知型AI'},
-            {id: 16, category: 'generative', title: 'Unit #16', description: 'Using Python call LLM API - 生成型AI'},
-            {id: 17, category: 'generative', title: 'Unit #17', description: '從頭打造 LLM - 生成型AI'},
-            {id: 18, category: 'generative', title: 'Unit #18', description: 'RAG 簡介、LangChain - 生成型AI'},
-            {id: 19, category: 'agentic', title: 'Unit #19', description: 'AI Agent, MCP, n8n - 代理型AI'},
-            {id: 20, category: 'agentic', title: 'Unit #20', description: '進階 n8n - 代理型AI'},
-            {id: 'foxhunting', category: 'games', title: '🦊 狐狸與獵人', description: '策略思維挑戰遊戲 - 運用邏輯推理抓住狡猾的狐狸！', isGame: true}
+            {id: 13, category: 'generative', title: 'Torch - 生成型AI'},
+            {id: 14, category: 'generative', title: 'Arbitrary-image Real time NST - 生成型AI'},
+            {id: 15, category: 'cognitive', title: 'YOLO - 感知型AI'},
+            {id: 16, category: 'generative', title: 'Using Python call LLM API - 生成型AI'},
+            {id: 17, category: 'generative', title: '從頭打造 LLM - 生成型AI'},
+            {id: 18, category: 'generative', title: 'RAG 簡介、LangChain - 生成型AI'},
+            {id: 19, category: 'agentic', title: 'AI Agent, MCP, n8n - 代理型AI'},
+            {id: 20, category: 'agentic', title: '進階 n8n - 代理型AI'},
+            {id: 'foxhunting', category: 'games', title: '🦊 狐狸與獵人', description: '策略思維挑戰遊戲 - 運用邏輯推理抓住狡猾的狐狸！', isGame: true},
+            {id: 'camera-sim', category: 'tools', title: '🎥 3D 攝影運鏡模擬器', description: '網頁 3D 運鏡、拍攝距離與角度教學 - 含 2D 取景重現'}
         ];
 
         // Initialize page
@@ -308,9 +309,11 @@
         // Open project details
         function openProject(id) {
             if (id === 'foxhunting') {
-                window.location.href = 'foxhunting.html';
+                window.location.href = 'Game/foxhunting.html';
             } else if (id === 'tower-defense') {
-                window.location.href = 'tower-defense.html';
+                window.location.href = 'Game/tower-defense.html';
+            } else if (id === 'camera-sim') {
+                window.location.href = 'camera-sim.html';
             } else {
                 window.location.href = `unit.html?unit=${id}`;
             }
