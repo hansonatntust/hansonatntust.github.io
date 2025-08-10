@@ -1,0 +1,61 @@
+/* 全局樣式重置 */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #111;
+    color: #fff;
+    overflow: hidden; /* 隱藏滾動條 */
+}
+
+/* 3D 主畫布容器 */
+#main-canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* 2D 預覽視窗容器 */
+#shot-preview-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px; /* 預覽視窗寬度 */
+    height: 180px; /* 預覽視窗高度 (16:9) */
+    border: 2px solid #fff;
+    background-color: #000;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    z-index: 100;
+}
+
+#shot-preview-container .label {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    color: #fff;
+    background-color: rgba(0,0,0,0.5);
+    padding: 2px 8px;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+/* 說明文字框 */
+#info-box {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 20px;
+    border-radius: 8px;
+    max-width: 250px;
+    font-size: 14px;
+    line-height: 1.5;
+    z-index: 100;
+}
+
+h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+}
